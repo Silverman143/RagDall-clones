@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1984879689065601463}
   - component: {fileID: 5698066830803477492}
   - component: {fileID: 7120531680375125695}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: TreePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,11 +87,16 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 2
     m_TransformParent: {fileID: 5380543946643121042}
     m_Modifications:
     - target: {fileID: 2631452000365085325, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
       propertyPath: m_Name
       value: tree03
+      objectReference: {fileID: 0}
+    - target: {fileID: 2631452000365085325, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2631452000365085325, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -142,11 +147,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8218483688590801016, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8218483688590801016, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2682265520221363571, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
+    m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 791e4bbcc97eb6a46b8314e9b3cee81c, type: 3}
 --- !u!4 &3541097982523608661 stripped
 Transform:
