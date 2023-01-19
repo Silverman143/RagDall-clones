@@ -10,14 +10,19 @@ public class ZombieController : EnemyMono
     [SerializeField] private float _attackSpeed = 5f;
 
     // Components.
-    [SerializeField] private Status _status;
-    private Animator _animator;
-    private NavMeshAgent _navMeshAgent;
-    private HealthSystem _healthSystem;
+    //[SerializeField] private Status _status;
+    //private Animator _animator;
+    //private NavMeshAgent _navMeshAgent;
+    //private HealthSystem _healthSystem;
 
-    private List<HumanMono> _targets;
+    //private List<HumanMono> _targets;
     private float _attackTimer = 0;
     [SerializeField]private bool _isAttacking = false;
+
+    // VFX.
+    [SerializeField] private ParticleSystem _deadVFX;
+
+    private bool _isActive = true;
 
     private void Awake()
     {
@@ -26,24 +31,29 @@ public class ZombieController : EnemyMono
         _animator = GetComponentInChildren<Animator>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _healthSystem = GetComponentInChildren<HealthSystem>();
+        _healthSystem.OnHealthFinished.AddListener(Dying);
     }
 
     private void Update()
     {
-        switch (_status)
+        if (_isActive)
         {
-            case Status.Idle:
-                break;
-            case Status.Walking:
-                Move();
-                break;
-            case Status.Attack:
-                Attack();
-                break;
-        }
+            switch (_status)
+            {
+                case Status.Idle:
+                    break;
+                case Status.Walking:
+                    Move();
+                    break;
+                case Status.Attack:
+                    Attack();
+                    break;
+            }
 
-        StatusSwitcher();
-        Animate();
+            StatusSwitcher();
+            Animate();
+            Rotate();
+        }
     }
 
     private void StatusSwitcher()
@@ -91,7 +101,6 @@ public class ZombieController : EnemyMono
     {
         if (_attackTimer <= 0 && !_isAttacking)
         {
-            Debug.Log("Attack");
             StartCoroutine(AttackCoroutine());
             _attackTimer = _attackSpeed;
         }
@@ -101,7 +110,7 @@ public class ZombieController : EnemyMono
         }
     }
 
-    private void GetDamage(int value)
+    public override void GetDamage(int value)
     {
         _healthSystem.GetDamage(value);
     }
@@ -120,6 +129,16 @@ public class ZombieController : EnemyMono
         {
             _targets.Remove(player);
         }
+    }
+
+    private void Dying()
+    {
+        _isActive = false;
+        OnDead.Invoke(this);
+        _animator.SetTrigger("Dead");
+        _deadVFX.Play();
+        SetTargetIndicator(false);
+        this.enabled = false;
     }
 
     IEnumerator AttackCoroutine()

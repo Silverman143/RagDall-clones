@@ -1,6 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+public enum ActionType
+{
+    Tree, Ore,
+}
 
 public enum Status
 {
@@ -26,6 +31,7 @@ public class PlayerController : HumanMono
 
 
     private bool _actionIsActive = false;
+    private EnemyMono _targetEnemy;
     // Events.
 
     public delegate void StartAttack();
@@ -42,6 +48,7 @@ public class PlayerController : HumanMono
         _characterStatus = Status.Walking;
         _actionTriggers = new List<ActionTriggerHandler>();
         _attackTriggerHandler = GetComponentInChildren<PlayerAttackTriggerHandler>();
+        _attackTriggerHandler.OnEnemyChanged.AddListener(SetTarget);
         _healthSystem.OnHealthFinished.AddListener(Dead);
         _weaponHandler = GetComponent<WeaponHandler>();
     }
@@ -53,8 +60,6 @@ public class PlayerController : HumanMono
             case Status.Walking:
                 Move();
                 Gravity();
-                Rotate();
-                Animate();
                 break;
 
             case Status.Action:
@@ -62,11 +67,14 @@ public class PlayerController : HumanMono
                 break;
 
             case Status.Attack:
+                //_targetEnemy = _attackTriggerHandler.TargetEnemy;
                 Attack();
                 break;
         }
-
+        Rotate();
         StatusSwitcher();
+        Animate();
+
     }
 
     private void Move()
@@ -83,6 +91,12 @@ public class PlayerController : HumanMono
         if (HasInput())
         {
             Vector3 targetRotation = new Vector3(_moveVector.x, 0, _moveVector.z);
+            _model.rotation = Quaternion.LookRotation(targetRotation);
+        }
+        else if (_characterStatus == Status.Attack)
+        {
+            Vector3 targetRotation = _targetEnemy.transform.position - transform.position;
+            targetRotation.y = 0;
             _model.rotation = Quaternion.LookRotation(targetRotation);
         }
     }
@@ -110,21 +124,64 @@ public class PlayerController : HumanMono
         else return false;
     }
 
+    private void SetTarget(EnemyMono enemy)
+    {
+        _targetEnemy = enemy;
+    }
+
     private void StatusSwitcher()
     {
+        Status oldStatus = _characterStatus;
+
+
+        // Define a new character status.
+
         if (HasInput())
         {
             _characterStatus = Status.Walking;
         }
         else if(_actionTriggers.Count!= 0)
         {
+
             _characterStatus = Status.Action;
         }
-        else if (_attackTriggerHandler.GetNearestEnemy() != null)
+        else if (_targetEnemy != null)
         {
             _characterStatus = Status.Attack;
-
         }
+        else
+        {
+            _characterStatus = Status.Idle;
+        }
+
+        // Changing character status.
+
+        if (oldStatus != _characterStatus)
+        {
+            string idleAnim = _weaponHandler.GetIdleAnimationName();
+
+            if (_characterStatus == Status.Action)
+            {
+                _weaponHandler.ActivateActionWeapon(_actionTriggers[0].Type);
+            }
+            else if (_characterStatus == Status.Attack)
+            {
+                _weaponHandler.DeactivateActionWeapons();
+
+                if (idleAnim != "Non") _animator.SetBool(idleAnim, true);
+                _attackTriggerHandler.UpdateTarget();
+            }
+
+            if (_characterStatus != Status.Attack)
+            {
+                if (idleAnim != "Non") _animator.SetBool(idleAnim, false);
+            }
+
+            StopAllCoroutines();
+            _actionIsActive = false;
+        }
+
+        
     }
 
     private void RemoveActionTrigger(ActionTriggerHandler trigger)
@@ -145,14 +202,27 @@ public class PlayerController : HumanMono
         {
             _attackTimer -= Time.deltaTime;
         }
+
+
     }
 
     private void Attack()
     {
-        if (_attackTimer<=0 && !_actionIsActive)
+        if (_targetEnemy != null)
         {
+            float attackDistance = _weaponHandler.GetWeaponAttackDistance();
+            float distance = Vector3.Distance(transform.position, _targetEnemy.transform.position);
 
-        }
+            if (_attackTimer <= 0 && !_actionIsActive && distance <= attackDistance)
+            {
+
+                StartCoroutine(AttackCoroutine());
+            }
+            else
+            {
+                _attackTimer -= Time.deltaTime;
+            }
+        } 
     }
 
     public override void GetDamage(int damageForce)
@@ -211,20 +281,26 @@ public class PlayerController : HumanMono
     IEnumerator AttackCoroutine()
     {
         _actionIsActive = true;
+        WeaponMono weapon = _weaponHandler.GetCurretnWeapon();
 
-        while (!_animator.GetCurrentAnimatorStateInfo(1).IsName("HitTree"))
+        string anim = "Attack";
+        _animator.SetTrigger(anim);
+
+        while (!_animator.GetCurrentAnimatorStateInfo(1).IsName(anim))
         {
             yield return null;
         }
 
-        while (_animator.GetCurrentAnimatorStateInfo(1).IsName("HitTree") && _animator.GetCurrentAnimatorStateInfo(1).normalizedTime < 0.3f)
+        while (_animator.GetCurrentAnimatorStateInfo(1).IsName(anim) && _animator.GetCurrentAnimatorStateInfo(1).normalizedTime < 0.3f)
         {
             yield return null;
         }
-        _actionTriggers[0].OnAction();
-        VibrationHandler.Hit();
-
-        while (_animator.GetCurrentAnimatorStateInfo(1).IsName("HitTree"))
+        if(weapon.Type == WeaponType.Melee)
+        {
+            _targetEnemy.GetDamage(weapon.DamageForce);
+            VibrationHandler.Hit();
+        }
+        while (_animator.GetCurrentAnimatorStateInfo(1).IsName(anim))
         {
             yield return null;
         }

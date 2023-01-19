@@ -7,6 +7,8 @@ public class ActionTriggerHandler : MonoBehaviour
     public delegate void Finished(ActionTriggerHandler trigger);
     public event Finished OnFinished;
 
+    public ActionType Type;
+
     public virtual void OnAction()
     {
 

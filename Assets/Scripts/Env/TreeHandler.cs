@@ -8,7 +8,6 @@ public class TreeHandler : ActionTriggerHandler
     [SerializeField] private Animator _animator;
 
     private BoxCollider _boxCollider;
-
     private bool _isActive = true;
 
     private void Awake()
