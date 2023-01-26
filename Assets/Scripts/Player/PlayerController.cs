@@ -18,6 +18,7 @@ public class PlayerController : HumanMono
     [SerializeField] private float _speed;
     [SerializeField] private Transform _model;
     [SerializeField] private Animator _animator;
+    [SerializeField] private PlayerData _playerData;
 
     private Status _characterStatus;
     private PlayerAttackTriggerHandler _attackTriggerHandler;
