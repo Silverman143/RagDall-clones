@@ -72,8 +72,8 @@ public class PlayerController : HumanMono
                 Attack();
                 break;
         }
-        Rotate();
         StatusSwitcher();
+        Rotate();
         Animate();
 
     }

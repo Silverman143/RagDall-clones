@@ -4,7 +4,6 @@ using UnityEngine;
 public class HealthSystem : MonoBehaviour
 {
     [SerializeField] private int _maxHealth = 100;
-    [SerializeField] private PlayerData _playerData;
     private int _currentHealth { get; set; }
     private HealthBarHandler _healthBar;
     private NumbersEffect _numbersEffect;
@@ -13,10 +12,10 @@ public class HealthSystem : MonoBehaviour
 
     private void Awake()
     {
-        _playerData = Resources.Load<PlayerData>("Data/PlayerData");
-        _maxHealth = _playerData.MaxHealth;
+        // Set max health
+        //_maxHealth = _playerData.MaxHealth;
         _healthBar = GetComponentInChildren<HealthBarHandler>();
-        _currentHealth = _playerData.CurrentHealth;
+        _currentHealth = _maxHealth;
         _numbersEffect = FindObjectOfType<NumbersEffect>();
     }
 
@@ -27,7 +26,7 @@ public class HealthSystem : MonoBehaviour
         _healthBar.Upload(_maxHealth, _currentHealth);
         _numbersEffect.Activate(value, transform.position, false);
 
-        _playerData.CurrentHealth = _currentHealth;
+        
     }
 
     public void GetDamage(int value)
@@ -41,7 +40,6 @@ public class HealthSystem : MonoBehaviour
         _healthBar.Upload(_maxHealth, _currentHealth);
         _numbersEffect.Activate(value, transform.position, true);
 
-        _playerData.CurrentHealth = _currentHealth;
     }
 
 }

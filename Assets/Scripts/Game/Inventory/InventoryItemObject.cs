@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Events;
+using TMPro;
 
 public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IPointerUpHandler
 {
     [SerializeField] private Image _icon;
     [SerializeField] private RectTransform _recTransform;
     [SerializeField] private CanvasGroup _canvasGroup;
-    private Canvas _canvas;
     [SerializeField] private InventoryItem _item;
-    
-    
+    [SerializeField] private TextMeshProUGUI _counterTMP;
+
+    private Canvas _canvas;
+
+    public bool _isEmpty = true;
+
 
     private void OnEnable()
     {
@@ -28,6 +31,15 @@ public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDra
         if (!_canvas)
         {
             _canvas = FindObjectOfType<Canvas>();
+        }
+        //if (!_counterTMP)
+        //{
+        //    _counterTMP = GetComponentInChildren<TextMeshProUGUI>();
+        //}
+
+        if (_item == null)
+        {
+            _icon.color = new Color32(255, 255, 225, 0);
         }
 
         ItemDragStart.OnItemsDragStart.AddListener(SetNotInteractable);
@@ -44,6 +56,8 @@ public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDra
     {
         return _item;
     }
+
+    public ItemHolder GetHolder() => transform.parent.GetComponent<ItemHolder>();
 
     public void SetParent(Transform parent)
     {
@@ -111,11 +125,30 @@ public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDra
 
     public void SetItem(InventoryItem item)
     {
-        _item = item;
-        GetComponentInChildren<Image>().sprite = _item.icon;
 
+        if (item)
+        {
+            _item = item;
+            //_icon = GetComponentInChildren<Image>();
+            _icon.sprite = _item.icon;
+            _icon.color = new Color32(255, 255, 225, 225);
+            _counterTMP.text = _item.amount.ToString();
+        }
+        else
+        {
+            _item = null;
+            _icon.color = new Color32(255, 255, 225, 0);
+            _counterTMP.text = "";
+        }
+        
 
-        Debug.Log($"icon name = {_item.icon}");
+    }
+
+    public void UpdateInterface()
+    {
+        _icon.sprite = _item.icon;
+        _icon.color = new Color32(255, 255, 225, 225);
+        _counterTMP.text = _item.amount.ToString();
     }
 
     public bool IsEmpty() => _item;

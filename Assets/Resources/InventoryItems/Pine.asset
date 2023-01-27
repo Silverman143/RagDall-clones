@@ -17,7 +17,7 @@ MonoBehaviour:
   strength: 9
   inventoryId: 0
   holderId: 2
-  name: Pine
+  name: 1
   type: 0
   amount: 1
   icon: {fileID: 21300000, guid: 3af3624a2492d428fa16a91900ca5e0d, type: 3}

@@ -3,6 +3,7 @@ using Mono.Data;
 using System.Data;
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 [System.Serializable]
 public enum DataType
@@ -110,7 +111,7 @@ public static class DataBaseHandler
         {
             InventoryItem item = ScriptableObject.CreateInstance<InventoryItem>();
 
-            item.name = reader.GetString(6);
+            item.name = Enum.Parse<ItemName>( reader.GetString(6));
             item.id = reader.GetInt32(0);
             item.level = reader.GetInt32(1);
             item.strength = reader.GetInt32(2);
@@ -143,7 +144,34 @@ public static class DataBaseHandler
 
         string conn = "URI=file:" + _filePath + ".db";
 
-        string query = "update ";
+        string query = $"update Items set level = {item.level}, strength = {item.strength}, inventoryId = {item.inventoryId}, itemHolderId = {item.holderId}, amount = {item.amount} where id = {item.id}; ";
+
+        IDbConnection dbConn;
+        IDbCommand dbCMD;
+        IDataReader reader;
+
+        dbConn = new SqliteConnection(conn);
+        dbConn.Open();
+        dbCMD = dbConn.CreateCommand();
+
+        dbCMD.CommandText = query;
+
+        reader = dbCMD.ExecuteReader();
+
+        reader.Close();
+        reader = null;
+        dbCMD.Dispose();
+        dbCMD = null;
+        dbConn.Close();
+        dbConn = null;
+    }
+    public static void RemoveItem(InventoryItem item)
+    {
+        _filePath = Application.persistentDataPath + "/" + _dataBaseName;
+
+        string conn = "URI=file:" + _filePath + ".db";
+
+        string query = $"DELETE from Items where id = {item.id} ;";
 
         IDbConnection dbConn;
         IDbCommand dbCMD;

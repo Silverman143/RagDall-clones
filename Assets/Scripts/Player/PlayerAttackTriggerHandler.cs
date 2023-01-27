@@ -52,9 +52,12 @@ public class PlayerAttackTriggerHandler : MonoBehaviour
     {
         if(other.TryGetComponent<EnemyMono>(out EnemyMono enemy))
         {
-            _enemies.Add(enemy);
-            enemy.OnDead.AddListener(RemoveEnemy);
-            SetNearestEnemy();
+            if (enemy.IsActive())
+            {
+                _enemies.Add(enemy);
+                enemy.OnDead.AddListener(RemoveEnemy);
+                SetNearestEnemy();
+            }
         }
     }
 

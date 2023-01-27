@@ -17,10 +17,14 @@ public class EnemyMono : MonoBehaviour
 
     public UnityEvent<EnemyMono> OnDead;
 
+    public bool _isActive;
+
     public virtual void GetDamage(int value)
     {
 
     }
+
+    public virtual bool IsActive() => _isActive;
 
     public virtual void SetTargetIndicator(bool value)
     {

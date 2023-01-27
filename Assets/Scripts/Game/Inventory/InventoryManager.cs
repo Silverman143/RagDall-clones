@@ -55,13 +55,12 @@ public class InventoryManager : MonoBehaviour
         {
             AssignHolder(item);
         }
+        foreach (ItemHolder holder in _holders)
+        {
+            holder.SetInventoryId(Id);
+        }
 
-        ItemDrop.OnItemDrop.AddListener(InteractItems);
-    }
 
-    private void OnDisable()
-    {
-        ItemDrop.OnItemDrop.RemoveListener(InteractItems);
     }
 
     public virtual void SetItems(List<InventoryItem> items)
@@ -76,8 +75,18 @@ public class InventoryManager : MonoBehaviour
 
     public virtual void AddItem(InventoryItem item)
     {
-        Items.Add(item);
-        AssignHolder(item);
+        for (int i = 0; i < Items.Count; i++)
+        {
+            if (item.name == Items[i].name && Items[i].amount < InventariesInteractionHandler.MaxItemAmount)
+            {
+                int amount = Items[i].amount + item.amount;
+                if (amount < InventariesInteractionHandler.MaxItemAmount)
+                {
+                    Items[i].amount = amount;
+
+                }
+            }
+        }
     }
 
     public virtual void RemoveItem(InventoryItem item)
@@ -94,11 +103,5 @@ public class InventoryManager : MonoBehaviour
                 holder.SetItem(item);
             }
         }
-    }
-
-    private void InteractItems(InventoryItemObject itemObj, ItemHolder holder)
-    {
-        holder.GetComponentInChildren<InventoryItemObject>().SetParent(itemObj.transform.parent);
-        itemObj.SetParent(holder.transform);
     }
 }

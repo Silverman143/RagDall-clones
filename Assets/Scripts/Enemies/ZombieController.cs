@@ -9,23 +9,15 @@ public class ZombieController : EnemyMono
     [SerializeField] private int _attackForce = 1;
     [SerializeField] private float _attackSpeed = 5f;
 
-    // Components.
-    //[SerializeField] private Status _status;
-    //private Animator _animator;
-    //private NavMeshAgent _navMeshAgent;
-    //private HealthSystem _healthSystem;
-
-    //private List<HumanMono> _targets;
     private float _attackTimer = 0;
     [SerializeField]private bool _isAttacking = false;
 
     // VFX.
     [SerializeField] private ParticleSystem _deadVFX;
 
-    private bool _isActive = true;
-
     private void Awake()
     {
+        _isActive = true;
         _status = Status.Idle;
         _targets = new List<HumanMono>();
         _animator = GetComponentInChildren<Animator>();
@@ -33,6 +25,7 @@ public class ZombieController : EnemyMono
         _healthSystem = GetComponentInChildren<HealthSystem>();
         _healthSystem.OnHealthFinished.AddListener(Dying);
     }
+
 
     private void Update()
     {
@@ -138,7 +131,6 @@ public class ZombieController : EnemyMono
         _animator.SetTrigger("Dead");
         _deadVFX.Play();
         SetTargetIndicator(false);
-        this.enabled = false;
     }
 
     IEnumerator AttackCoroutine()

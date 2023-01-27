@@ -8,6 +8,11 @@ public enum ItemType
     Consumable, Equipment, Weapon, Quest
 }
 
+public enum ItemName
+{
+    Board, Pine, 
+}
+
 [CreateAssetMenu(fileName ="New Item", menuName = "Item/Create new Item")]
 public class InventoryItem : ScriptableObject
 {
@@ -16,7 +21,7 @@ public class InventoryItem : ScriptableObject
     public int strength;
     public int inventoryId;
     public int holderId;
-    public string name;
+    public ItemName name;
     public ItemType type;
     [Range(0, 20)]
     public int amount;
