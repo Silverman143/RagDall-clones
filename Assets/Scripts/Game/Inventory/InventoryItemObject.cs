@@ -57,20 +57,20 @@ public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDra
         return _item;
     }
 
-    public ItemHolder GetHolder() => transform.parent.GetComponent<ItemHolder>();
+    public ItemHolderMono GetHolder() => transform.parent.GetComponent<ItemHolderMono>();
 
-    public void SetParent(Transform parent)
-    {
+    //public void SetParent(Transform parent)
+    //{
 
-        transform.parent = parent;
-        _recTransform.anchoredPosition = Vector2.zero;
-        if (_item)
-        {
-            int itemId = _item.id;
-            int holderId = parent.GetComponent<ItemHolder>().Id;
-            DataBaseHandler.ChangeItemHolderId(itemId, holderId);
-        }
-    }
+    //    transform.parent = parent;
+    //    _recTransform.anchoredPosition = Vector2.zero;
+    //    if (_item)
+    //    {
+    //        int itemId = _item.id;
+    //        int holderId = parent.GetComponent<ItemHolderMono>().Id;
+    //        DataBaseHandler.ChangeItemHolderId(itemId, holderId);
+    //    }
+    //}
 
     public void RemoveItem()
     {
@@ -133,12 +133,15 @@ public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDra
             _icon.sprite = _item.icon;
             _icon.color = new Color32(255, 255, 225, 225);
             _counterTMP.text = _item.amount.ToString();
+            DataBaseHandler.UploadItemData(_item);
+            _isEmpty = false;
         }
         else
         {
             _item = null;
             _icon.color = new Color32(255, 255, 225, 0);
             _counterTMP.text = "";
+            _isEmpty = true;
         }
         
 
@@ -146,12 +149,19 @@ public class InventoryItemObject : MonoBehaviour, IPointerDownHandler, IBeginDra
 
     public void UpdateInterface()
     {
-        _icon.sprite = _item.icon;
-        _icon.color = new Color32(255, 255, 225, 225);
-        _counterTMP.text = _item.amount.ToString();
+        _icon.sprite = _item?.icon;
+        if (_item)
+        {
+            _icon.color = new Color32(255, 255, 225, 225);
+            _counterTMP.text = _item?.amount.ToString();
+        }
+        else
+        {
+            _icon.color = new Color32(255, 255, 225, 0);
+        }
     }
 
-    public bool IsEmpty() => _item;
+    public bool IsEmpty() => _isEmpty;
 
     public void OnPointerUp(PointerEventData eventData)
     {

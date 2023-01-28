@@ -80,8 +80,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c17fd12198fc416581b3e2b6ecb076d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Type: 0
   strength: 3
   _animator: {fileID: 5698066830803477492}
+  _resourceItemPrefab: {fileID: 11400000, guid: 4191924a839b34d3683fa3cb2b6c3a70, type: 2}
 --- !u!1001 &4837267649385342950
 PrefabInstance:
   m_ObjectHideFlags: 0

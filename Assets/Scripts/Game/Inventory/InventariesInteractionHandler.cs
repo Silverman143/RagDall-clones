@@ -7,14 +7,14 @@ public class InventariesInteractionHandler : MonoBehaviour
     //public delegate void InventaryInteraction(ItemHolder holder, InventoryItemObject itemObject);
     //public static event InventaryInteraction OnItemsInteract;
     [SerializeField] public static int MaxItemAmount = 20;
-    [SerializeField] private static CharacterInventory _characterInventory;
+    [SerializeField] public static CharacterInventory _characterInventory;
 
-    private void Awake()
+    private void Start()
     {
         _characterInventory = FindObjectOfType<CharacterInventory>();
     }
 
-    public static void InventaryInteraction(ItemHolder holder, InventoryItemObject itemObj)
+    public static void InventaryInteraction(ItemHolderMono holder, InventoryItemObject itemObj)
     {
         InventoryItem objItem = itemObj.GetItem();
         InventoryItem holderItem = holder.GetItem();
@@ -58,6 +58,6 @@ public class InventariesInteractionHandler : MonoBehaviour
 
     public static void AddToCharacterInventory(InventoryItem item)
     {
-
+        _characterInventory.AddItem(item);
     } 
 }

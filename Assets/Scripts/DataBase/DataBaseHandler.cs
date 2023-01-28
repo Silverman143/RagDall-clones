@@ -140,12 +140,13 @@ public static class DataBaseHandler
 
     public static void UploadItemData(InventoryItem item)
     {
+        Debug.Log($"Uploding data itemName = {item.name}, amount = {item.amount}");
         _filePath = Application.persistentDataPath + "/" + _dataBaseName;
 
         string conn = "URI=file:" + _filePath + ".db";
 
         string query = $"update Items set level = {item.level}, strength = {item.strength}, inventoryId = {item.inventoryId}, itemHolderId = {item.holderId}, amount = {item.amount} where id = {item.id}; ";
-
+        Debug.Log(query);
         IDbConnection dbConn;
         IDbCommand dbCMD;
         IDataReader reader;
@@ -219,5 +220,43 @@ public static class DataBaseHandler
         dbCMD = null;
         dbConn.Close();
         dbConn = null;
+    }
+
+    public static int AddItem(InventoryItem item)
+    {
+
+        _filePath = Application.persistentDataPath + "/" + _dataBaseName;
+
+        int id = 0;
+
+        string conn = "URI=file:" + _filePath + ".db";
+
+        string query = $"insert into Items (level, strength, inventoryId, itemHolderId, amount, name) values  ({item.level}, {item.strength}, {item.inventoryId}, {item.holderId}, {item.amount},\' {item.name.ToString()}\') RETURNING id;";
+        Debug.Log(query);
+        IDbConnection dbConn;
+        IDbCommand dbCMD;
+        IDataReader reader;
+
+        dbConn = new SqliteConnection(conn);
+        dbConn.Open();
+        dbCMD = dbConn.CreateCommand();
+
+        dbCMD.CommandText = query;
+
+        reader = dbCMD.ExecuteReader();
+
+        while (reader.Read())
+        {
+            id = reader.GetInt32(0);
+        }
+
+        reader.Close();
+        reader = null;
+        dbCMD.Dispose();
+        dbCMD = null;
+        dbConn.Close();
+        dbConn = null;
+
+        return id;
     }
 }

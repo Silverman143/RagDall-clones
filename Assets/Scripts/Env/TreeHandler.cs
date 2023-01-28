@@ -6,6 +6,7 @@ public class TreeHandler : ActionTriggerHandler
 {
     [SerializeField] private int strength = 3;
     [SerializeField] private Animator _animator;
+    [SerializeField] private InventoryItem _resourceItemPrefab;
 
     private BoxCollider _boxCollider;
     private bool _isActive = true;
@@ -35,6 +36,11 @@ public class TreeHandler : ActionTriggerHandler
                 _animator.SetTrigger("GetHit");
             }
         }
+        InventoryItem item = ScriptableObject.CreateInstance<InventoryItem>();
+        item.name = _resourceItemPrefab.name;
+        item.amount = 1;
+        item.icon = _resourceItemPrefab.icon;
+        InventariesInteractionHandler.AddToCharacterInventory(item);
     }
 
     public override void OnAction()

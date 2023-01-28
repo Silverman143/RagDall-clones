@@ -16,10 +16,6 @@ public class ItemDragEnd : UnityEvent
     public static ItemDragEnd OnItemsDragEnd = new ItemDragEnd();
 }
 
-public class ItemDrop: UnityEvent<InventoryItemObject, ItemHolder>
-{
-    public static ItemDrop OnItemDrop = new ItemDrop();
-}
 
 
 // Main.
@@ -27,14 +23,14 @@ public class InventoryManager : MonoBehaviour
 {
     public int Id;
     public List<InventoryItem> Items;
-    public List<ItemHolder> _holders;
+    public List<ItemHolderInventary> _holders;
 
     private ItemsLoader _loader;
 
 
     public virtual void Start()
     {
-        _holders = GetComponentsInChildren<ItemHolder>().ToList<ItemHolder>();
+        //_holders = GetComponentsInChildren<ItemHolderInventary>().ToList<ItemHolderInventary>();
         //Items = DataBaseHandler.GetItems();
 
         //foreach (InventoryItem item in Items)
@@ -43,11 +39,7 @@ public class InventoryManager : MonoBehaviour
         //}
 
         //SetItems(Items);
-    }
 
-    private void OnEnable()
-    {
-        _holders = GetComponentsInChildren<ItemHolder>().ToList<ItemHolder>();
         _loader = FindObjectOfType<ItemsLoader>();
         Items = _loader.GetInventoryItems(Id);
 
@@ -55,12 +47,32 @@ public class InventoryManager : MonoBehaviour
         {
             AssignHolder(item);
         }
-        foreach (ItemHolder holder in _holders)
+        foreach (ItemHolderInventary holder in _holders)
         {
             holder.SetInventoryId(Id);
         }
+    }
 
+    public virtual void OnEnable()
+    {
+        //_holders = GetComponentsInChildren<ItemHolderInventary>().ToList<ItemHolderInventary>();
+        _loader = FindObjectOfType<ItemsLoader>();
+        LoadData();
+    }
 
+    private void LoadData()
+    {
+        Items = new List<InventoryItem>();
+        Items = _loader.GetInventoryItems(Id);
+
+        foreach (InventoryItem item in Items)
+        {
+            AssignHolder(item);
+        }
+        foreach (ItemHolderInventary holder in _holders)
+        {
+            holder.SetInventoryId(Id);
+        }
     }
 
     public virtual void SetItems(List<InventoryItem> items)
@@ -75,18 +87,54 @@ public class InventoryManager : MonoBehaviour
 
     public virtual void AddItem(InventoryItem item)
     {
-        for (int i = 0; i < Items.Count; i++)
+        bool complete = false;
+
+        if (item.type == ItemType.Consumable)
         {
-            if (item.name == Items[i].name && Items[i].amount < InventariesInteractionHandler.MaxItemAmount)
+            for (int i = 0; i < Items.Count; i++)
             {
-                int amount = Items[i].amount + item.amount;
-                if (amount < InventariesInteractionHandler.MaxItemAmount)
+                if (item.name == Items[i].name && Items[i].amount < InventariesInteractionHandler.MaxItemAmount)
                 {
-                    Items[i].amount = amount;
+                    int amount = Items[i].amount + item.amount;
+                    if (amount < InventariesInteractionHandler.MaxItemAmount)
+                    {
+                        Items[i].amount = amount;
+                        item = null;
+                        DataBaseHandler.UploadItemData(Items[i]);
+                        complete = true;
+                        break;
+                    }
+                    else
+                    {
+                        Items[i].amount = InventariesInteractionHandler.MaxItemAmount;
+                        item.amount = amount - InventariesInteractionHandler.MaxItemAmount;
+                        DataBaseHandler.UploadItemData(Items[i]);
+                    }
+
 
                 }
             }
         }
+        
+        if (item)
+        {
+            item.inventoryId = Id;
+
+            for(int i =0; i< _holders.Count; i++)
+            {
+                if (_holders[i].IsEmpty() && _holders[i].IsActive)
+                {
+                    int id = DataBaseHandler.AddItem(item);
+                    item.id = id;
+                    _holders[i].SetItem(item);
+                    Items.Add(item);
+                    complete = true;
+                    break;
+                }
+            }
+        }
+
+        if (!complete == true) Debug.Log("No place for object in items");
     }
 
     public virtual void RemoveItem(InventoryItem item)
@@ -96,7 +144,7 @@ public class InventoryManager : MonoBehaviour
 
     public virtual void AssignHolder(InventoryItem item)
     {
-        foreach(ItemHolder holder in _holders)
+        foreach(ItemHolderInventary holder in _holders)
         {
             if (holder.Id == item.holderId)
             {
