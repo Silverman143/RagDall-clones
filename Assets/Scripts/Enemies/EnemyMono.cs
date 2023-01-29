@@ -14,10 +14,18 @@ public class EnemyMono : MonoBehaviour
     public Animator _animator;
     public NavMeshAgent _navMeshAgent;
     public HealthSystem _healthSystem;
+    public LootHandler _lootHandler;
+    public Outline _outline;
 
     public UnityEvent<EnemyMono> OnDead;
 
     public bool _isActive;
+
+
+    public virtual void OnEnable()
+    {
+        if (!_lootHandler) _lootHandler = GetComponent<LootHandler>();
+    }
 
     public virtual void GetDamage(int value)
     {

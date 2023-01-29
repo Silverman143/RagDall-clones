@@ -19206,6 +19206,7 @@ GameObject:
   - component: {fileID: 6370704073385145840}
   - component: {fileID: 3641031913070378046}
   - component: {fileID: 2651971554040809742}
+  - component: {fileID: -4638650672606829156}
   m_Layer: 7
   m_Name: Zombies
   m_TagString: Untagged
@@ -19273,6 +19274,8 @@ MonoBehaviour:
   _animator: {fileID: 0}
   _navMeshAgent: {fileID: 0}
   _healthSystem: {fileID: 0}
+  _lootHandler: {fileID: 0}
+  _outline: {fileID: 2651971554040809742}
   OnDead:
     m_PersistentCalls:
       m_Calls: []
@@ -19344,6 +19347,22 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &-4638650672606829156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5292827123661716435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 696854b4170bd4b4783297c9a587567c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _possibleLoot:
+  - {fileID: 11400000, guid: edeb56da70da44527b3bace926429841, type: 2}
+  - {fileID: 11400000, guid: 4191924a839b34d3683fa3cb2b6c3a70, type: 2}
+  _loot: []
 --- !u!1001 &927734491058092652
 PrefabInstance:
   m_ObjectHideFlags: 0

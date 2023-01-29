@@ -131,6 +131,10 @@ public class ZombieController : EnemyMono
         _animator.SetTrigger("Dead");
         _deadVFX.Play();
         SetTargetIndicator(false);
+        if (!_lootHandler.IsEmpty())
+        {
+            _outline.enabled = true;
+        }
     }
 
     IEnumerator AttackCoroutine()
